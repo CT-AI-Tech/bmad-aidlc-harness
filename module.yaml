@@ -1,0 +1,50 @@
+code: ai-dlc-compliance
+name: "AI-DLC Compliance Harness"
+description: "Loads vertical-specific US healthcare compliance guardrails into BMAD's planning and review workflows, via an index-first lookup against the ai-dlc-harness registry."
+
+header: "AI-DLC Compliance Harness Configuration"
+subheader: "Where the harness lives, and which vertical applies to this project. Same two decisions every other adapter asks for."
+
+# --- Resolved into _bmad/config.toml under [modules.ai-dlc-compliance] ---
+# Read by the ai-dlc-compliance-check skill via resolve_config.py, the same
+# script every other BMAD skill uses - no separate compliance-config.yml here.
+
+harness_path:
+  prompt: "Where is the ai-dlc-harness checkout? (relative to this project's root, or absolute)"
+  default: "../ai-dlc-harness"
+  result: "{value}"
+
+vertical:
+  prompt: "Which vertical applies to this project? Must match a folder name under <harness_path>/verticals/"
+  default: "medical-devices"
+  result: "{value}"
+
+block_on_binding:
+  prompt: "Should an unresolved BINDING guardrail stop the workflow until a human resolves it?"
+  default: "true"
+  single-select:
+    - value: "true"
+      label: "Yes - stop and ask (recommended)"
+    - value: "false"
+      label: "No - surface it, never block"
+  result: "{value}"
+
+# One step this module cannot do for you: BMAD has no mechanism for one module
+# to write another module's workflow-customization files (activation_steps_prepend
+# on bmad-product-brief / bmad-architecture / bmad-create-epics-and-stories /
+# bmad-code-review lives in THOSE workflows' own customize surface, in
+# _bmad/custom/, which only a human or a script outside the module system can
+# populate). post_install_message says so explicitly rather than pretending
+# the install is complete without it.
+post_install_message: |
+  AI-DLC Compliance Harness: 2 of 3 steps done automatically.
+  The skill is installed, and harness_path/vertical are saved above.
+
+  One manual step remains - BMAD has no way for a module to wire another
+  module's workflows for you. Copy the 4 override files this module ships
+  in its overrides/ folder into _bmad/custom/:
+
+    cp <this-module>/overrides/*.toml _bmad/custom/
+
+  Without this, the skill exists but nothing calls it automatically. See
+  this module's README.md for the exact path and what each override does.

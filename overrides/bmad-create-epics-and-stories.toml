@@ -1,0 +1,11 @@
+# AI-DLC Compliance Harness override for bmad-create-epics-and-stories.
+# Copy this file to {project-root}/_bmad/custom/bmad-create-epics-and-stories.toml.
+#
+# Re-checks development-phase guardrails against the concrete epics/stories about to
+# be built - equivalent to Speckit's after_tasks hook (re-checking development-phase
+# guardrails once the work is broken into concrete units, not just at architecture time).
+
+[workflow]
+activation_steps_prepend = [
+  "skill:ai-dlc-compliance-check phase=development",
+]

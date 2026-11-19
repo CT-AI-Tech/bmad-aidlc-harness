@@ -1,0 +1,21 @@
+# AI-DLC Compliance Harness override for bmad-architecture.
+# Copy this file to {project-root}/_bmad/custom/bmad-architecture.toml.
+#
+# Fires before the architecture workflow begins, so development-phase guardrails
+# (software lifecycle class, risk management, SMART/FHIR scoping, etc.) shape the
+# architecture decisions instead of being discovered after the spine is written —
+# equivalent to Speckit's after_plan hook, but run as a pre-flight check since BMAD's
+# architecture skill doesn't have a natural "after" seam to hang a check on.
+
+[workflow]
+activation_steps_prepend = [
+  "skill:ai-dlc-compliance-check phase=development",
+]
+
+# Deliberately NOT using persistent_facts with a wildcard glob here (e.g.
+# "file:.../verticals/*/development/*.md") - that would load every vertical's
+# guardrails regardless of which one this project actually uses, defeating the whole
+# point of the harness's index-first lookup. The activation step above does the
+# filtered, index-driven load instead. If your team wants always-on context for a
+# single pinned vertical, point persistent_facts at that one vertical's folder
+# explicitly in your own copy of this override - don't wildcard it.

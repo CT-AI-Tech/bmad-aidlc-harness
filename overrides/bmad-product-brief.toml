@@ -1,0 +1,13 @@
+# AI-DLC Compliance Harness override for bmad-product-brief.
+# Copy this file to {project-root}/_bmad/custom/bmad-product-brief.toml in a BMAD
+# project that has installed the ai-dlc-compliance-check skill (see
+# ../README.md for the install steps).
+#
+# This fires BEFORE the product-brief workflow greets the user or starts its own
+# work — the earliest planning artifact in BMAD's flow, equivalent to Speckit's
+# before_constitution hook.
+
+[workflow]
+activation_steps_prepend = [
+  "skill:ai-dlc-compliance-check phase=constitution",
+]

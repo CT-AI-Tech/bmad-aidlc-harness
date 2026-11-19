@@ -1,0 +1,13 @@
+# AI-DLC Compliance Harness override for bmad-code-review.
+# Copy this file to {project-root}/_bmad/custom/bmad-code-review.toml.
+#
+# bmad-code-review runs several independent reviewers in parallel, then triages their
+# findings - the review-phase guardrail check runs as one more reviewer in that same
+# pass, so a traceability/compliance finding gets triaged alongside the ordinary code
+# review findings instead of living in a separate report nobody reads. Equivalent to
+# Speckit's after_implement hook.
+
+[workflow]
+activation_steps_prepend = [
+  "skill:ai-dlc-compliance-check phase=review",
+]

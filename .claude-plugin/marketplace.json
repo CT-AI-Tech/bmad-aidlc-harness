@@ -1,0 +1,26 @@
+{
+  "name": "ai-dlc-compliance-harness",
+  "owner": {
+    "name": "CT-AI-Tech"
+  },
+  "description": "AI-DLC compliance guardrail harness for BMAD - loads vertical-specific US healthcare compliance guardrails into BMAD's planning and review workflows via an index-first lookup.",
+  "license": "UNLICENSED",
+  "homepage": "https://github.com/CT-AI-Tech/ai-dlc-harness",
+  "repository": "https://github.com/CT-AI-Tech/ai-dlc-harness",
+  "keywords": ["bmad", "compliance", "healthcare", "hipaa", "fda", "guardrails", "ai-dlc"],
+  "plugins": [
+    {
+      "name": "ai-dlc-compliance",
+      "displayName": "AI-DLC Compliance Harness",
+      "source": "./",
+      "description": "Loads vertical-specific US healthcare compliance guardrails into BMAD's planning and review workflows, via an index-first lookup against the ai-dlc-harness registry.",
+      "version": "0.1.0",
+      "author": {
+        "name": "CT-AI-Tech"
+      },
+      "skills": [
+        "./ai-dlc-compliance-check"
+      ]
+    }
+  ]
+}
