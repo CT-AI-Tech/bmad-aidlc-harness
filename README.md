@@ -1,5 +1,6 @@
 # AI-DLC Compliance Harness — BMAD native module
 
+
 This folder is a real, installable BMAD module (`module.yaml` at its root, per
 BMAD's own module schema) — not a set of files to clone-and-copy by hand. It's meant
 to be the entire content of a dedicated release branch; see the harness repo's
