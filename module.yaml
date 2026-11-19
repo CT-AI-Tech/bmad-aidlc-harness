@@ -10,7 +10,7 @@ subheader: "Where the harness lives, and which vertical applies to this project.
 # script every other BMAD skill uses - no separate compliance-config.yml here.
 
 harness_path:
-  prompt: "Where is the ai-dlc-harness checkout? (relative to this project's root, or absolute)"
+  prompt: "Where should the ai-dlc-harness registry live? (relative to this project's root, or absolute — auto-cloned here on first use if nothing exists yet)"
   default: "../ai-dlc-harness"
   result: "{value}"
 
@@ -38,7 +38,10 @@ block_on_binding:
 # the install is complete without it.
 post_install_message: |
   AI-DLC Compliance Harness: 2 of 3 steps done automatically.
-  The skill is installed, and harness_path/vertical are saved above.
+  The skill is installed, and harness_path/vertical are saved above. The
+  ai-dlc-harness registry itself (registry/ + verticals/) does NOT need to be
+  cloned by hand - the skill auto-fetches it from the public ai-dlc-harness
+  repo into harness_path the first time it runs, if nothing is there yet.
 
   One manual step remains - BMAD has no way for a module to wire another
   module's workflows for you. Copy the 4 override files this module ships

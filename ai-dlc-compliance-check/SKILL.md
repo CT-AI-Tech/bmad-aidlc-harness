@@ -17,7 +17,7 @@ module means `harness_path`, `vertical`, and `block_on_binding` were already ask
 and saved during `bmad-method install`, the same way BMAD's own `core` and `bmm`
 modules ask for `user_name` or `planning_artifacts`.
 
-## Step 1 — Load config, degrade gracefully if absent
+## Step 1 — Load config, auto-fetch the harness if missing, degrade gracefully if absent
 
 ```
 uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-root}
@@ -26,11 +26,37 @@ uv run {project-root}/_bmad/scripts/resolve_config.py --project-root {project-ro
 in this harness).
 
 Read `{modules.ai-dlc-compliance.harness_path}`, `{modules.ai-dlc-compliance.vertical}`,
-`{modules.ai-dlc-compliance.block_on_binding}` from the result.
+`{modules.ai-dlc-compliance.block_on_binding}` from the result, plus
+`{modules.ai-dlc-compliance.harness_repo_url}` if present (defaults to
+`https://github.com/CT-AI-Tech/ai-dlc-harness.git` when absent — this isn't one of the
+3 prompted install questions; it only needs hand-adding to `_bmad/config.toml` to point
+at a fork, mirror, or private checkout).
 
 - Missing (module not installed, or `_bmad/config.toml` unreadable) → skip silently
   with a one-line note. Never fail the calling workflow over the harness's own setup.
-- `harness_path` unresolvable → warn once, skip, never fail the calling workflow.
+
+**Resolve `harness_path`:**
+
+1. If `<harness_path>/registry/guardrail-index.yaml` already exists, use it as-is.
+   Never touch an existing checkout — it may be a fork, a pinned commit, or hand-edited.
+2. If `<harness_path>` does not exist at all, fetch it once, automatically, before
+   doing anything else:
+   - Try `git clone --depth 1 <harness_repo_url> <harness_path>`.
+   - If `git` isn't available or the clone fails (a network that resets
+     `github.com`/`raw.githubusercontent.com` while still allowing
+     `codeload.github.com` has been observed in practice), fall back to a zip
+     download: rewrite the URL to its codeload form —
+     `https://codeload.github.com/<owner>/<repo>/zip/refs/heads/<branch>` — download
+     it, extract it, and move the extracted folder's contents into `<harness_path>`.
+   - On success, report once, visibly: `[ai-dlc-compliance] auto-fetched the harness
+     to <harness_path> from <harness_repo_url>`. Drop a marker file
+     `<harness_path>/.ai-dlc-harness-autofetched` (fetch date + source URL) so it's
+     obvious later that this folder was machine-fetched, not placed there by a human.
+   - If both the clone and the zip fallback fail (offline, URL unreachable, or a
+     private repo with no usable credentials), warn once and skip. Never fail the
+     calling workflow for this.
+3. If `harness_path` now resolves (pre-existing or just auto-fetched) but
+   `registry/guardrail-index.yaml` is still missing or unparsable, warn once and skip.
 
 Evidence directory is not a prompted config value (keeping the install to 3 questions,
 not more) - it defaults to `_bmad-output/compliance`, matching BMAD's own
@@ -82,6 +108,7 @@ user sees, not buried after the workflow has already started talking.
 
 ## Graceful degradation
 
-Identical to every other adapter in this harness: missing config, unresolvable
-`harness_path`, or an unparsable `guardrail-index.yaml` all skip with a warning and
-never fail the calling BMAD workflow for this skill's own infrastructure problems.
+Identical to every other adapter in this harness: missing config, a `harness_path`
+that can't be resolved even after the auto-fetch attempt in Step 1, or an unparsable
+`guardrail-index.yaml` all skip with a warning and never fail the calling BMAD
+workflow for this skill's own infrastructure problems.

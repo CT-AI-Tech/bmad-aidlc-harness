@@ -58,9 +58,22 @@ The first confirms your `harness_path`/`vertical` answers saved correctly. The s
 only shows the override once you've done the manual `cp` above — same verification
 method used throughout this harness's build.
 
+## You don't need to clone ai-dlc-harness yourself
+
+`harness_path` no longer requires a manual `git clone` as a sibling folder. The
+`ai-dlc-compliance-check` skill auto-fetches it (git clone, falling back to a zip
+download) into `harness_path` the first time it runs, if nothing is there yet. It
+never touches a path that already has something in it, so pointing `harness_path` at
+an existing checkout (a fork, a pinned version, a private mirror) is still fully
+supported — auto-fetch only fires when the folder is genuinely empty.
+
 ## Honest status
 
-Structure and config-prompting verified hands-on against a local path. Verifying the
-full flow against a **real** git branch URL (not a local path) and against a public
-vs. private repo is the next real test — see the harness repo's adoption guide for
-the broader context this module fits into.
+Verified hands-on end-to-end against the real public repos (not local paths):
+module discovery, config-prompting, and skill install all confirmed against
+`https://github.com/CT-AI-Tech/bmad-aidlc-harness`, with `harness_path` resolving to
+a real clone of `https://github.com/CT-AI-Tech/ai-dlc-harness`. The auto-fetch
+behavior above is implemented as skill instructions (this harness's agents always run
+with shell access, same as every other step here) rather than a BMAD-native
+installer hook — see `docs/MANUAL-TEST-GUIDE.md` in the main harness repo for the
+full walkthrough.
